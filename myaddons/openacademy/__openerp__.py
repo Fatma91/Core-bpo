@@ -10,5 +10,8 @@
                        - training courses """,
 
     'depends': ['base'],
-    'data':['openacademy.xml'],
+    'data':[
+        'openacademy_view.xml',
+        'partner_view.xml'
+    ],
 }

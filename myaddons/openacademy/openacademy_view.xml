@@ -71,6 +71,7 @@
                       <field name="name"/>
                       <field name="seats"/>
                       <field name="start"/>
+                      <field name="taken_seats" widget="progressbar"/>
                     </tree>
                 </field>
         </record>
@@ -86,6 +87,7 @@
                                    <group string="Session Details" colspan="2" >
                                        <field name="name"/>
                                        <field name="seats"/>
+                                       <field name="taken_seats" widget="progressbar"/>
                                    </group >
                                    <group string="Session Time" colspan="2" >
                                        <field name="duration"/>
