@@ -7,12 +7,9 @@ class openacademy_courses(models.Model):
 
     title = fields.Char(string="Course Title", required=True, defualt="Math")
     description = fields.Text(string="Course Description")
-    responsible_id = fields.Many2one('res.users',
-                                     ondelete='set null',string= "Responsible")
-    session_ids = fields.One2many('openacademy.sessions',
-                                  'course_id', string="Sessions")
-    _sql_constraints = [('name_unique','UNIQUE(title)',
-                         'The course title must be unique')]
+    responsible_id = fields.Many2one('res.users',ondelete='set null',string= "Responsible")
+    session_ids = fields.One2many('openacademy.sessions', 'course_id', string="Sessions")
+    _sql_constraints = [('name_unique','UNIQUE(title)','The course title must be unique')]
 
 
 
@@ -26,22 +23,36 @@ class openacademy_sessions(models.Model):
     active=fields.Boolean(string=" Session Case",default=True)
     seats= fields.Integer(string="No Of Seats")
     instructor_id = fields.Many2one('res.partner', string="Instructor",
-                                    domain=['|', ('instructor', '=', True),
-                                            ('category_id.name', 'ilike', "Teacher")])
+                                    domain=['|', ('instructor', '=', True),('category_id.name', 'ilike', "Teacher")])
 
 
     course_id = fields.Many2one('openacademy.courses',
                                 ondelete='cascade',string="Course", required=True)
     attendee_ids = fields.Many2many('res.partner', string="Attendees")
     taken_seats = fields.Float(string="Taken Seats", compute='_taken_seats')
-    end= fields.Date(string="End Date",compute='_get_end_date',
-                     inverse='_set_end_date',store=True,)
-    hours = fields.Float(string="Duration In Hours",compute='_get_hours',
-                         inverse='_set_hours')
-    attendees_count = fields.Integer(string=" Attendees Count" ,
-                                     compute='_get_attendees_count',store=True)
-    color = fields.Integer()
+    end= fields.Date(string="End Date",compute='_get_end_date', inverse='_set_end_date',store=True,)
+    hours = fields.Float(string="Duration In Hours",compute='_get_hours',inverse='_set_hours')
+    attendees_count = fields.Integer(string=" Attendees Count" , compute='_get_attendees_count',store=True)
+    state = fields.Selection([
+         ('draft', "Draft"),
+         ('confirmed', "Confirmed"),
+         ('done', "Done"),
+    ])
 
+    @api.one
+    def action_draft(self):
+        # if self.state == 'confirmed' or self.state == 'done'
+        self.write({'state':'draft'})
+
+    @api.one
+    def action_confirm(self):
+        # if self.state == 'draft' or self.state == 'done'
+        self.write({'state':'confirmed'})
+
+    @api.one
+    def action_done(self):
+        # if self.state == 'confirmed' or self.state == 'draft'
+        self.write({'state':'done'})
 
     @api.one
     @api.depends('seats', 'attendee_ids')
@@ -106,7 +117,5 @@ class openacademy_sessions(models.Model):
     @api.depends('attendee_ids')
     def _get_attendees_count(self):
         self.attendees_count = len(self.attendee_ids)
-
-
 
 
