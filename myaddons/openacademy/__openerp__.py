@@ -11,7 +11,11 @@
 
     'depends': ['base'],
     'data':[
+        'security/openacademy_security.xml',
+        'security/ir.model.access.csv',
         'openacademy_view.xml',
-        'partner_view.xml'
+        'partner_view.xml',
+
+
     ],
 }
